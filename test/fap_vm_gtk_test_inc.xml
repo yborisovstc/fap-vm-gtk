@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+
+<!-- Specification of FAP visualization module for GTK -->
+<!--
+     -->
+
+<!DOCTYPE  iobject SYSTEM "/usr/share/fapws/conf/objspec.dtd"> 
+
+<iobject type="none" id="main">
+
+    <state type="StVectF" id="test_coord_pf" init="{0,0}">
+	<inp id="self"/>
+	<logspec event="upd"> <logdata id="cur"/> <logdata id="new"/> </logspec> 
+	<trans>add inp self {0.1,0.1}</trans>
+    </state>
+
+    <iobject type="file:/usr/share/fapws/modules/fap-vm-gtk.xml#main/Window" id="Test_Window"></iobject>
+    <iobject type="file:/usr/share/fapws/modules/fap-vm-gtk.xml#main/Fixed" id="Test_Fixed"></iobject>
+    <iobject type="file:/usr/share/fapws/modules/fap-vm-gtk.xml#main/Drawing_Area" id="Test_DrawArea"></iobject>
+
+    <conn id="Test_Fixed.parent" pair="Test_Window.window"/>
+    <conn id="Test_DrawArea.parent" pair="Test_Fixed.widget"/>
+    <conn id="Test_DrawArea.coord_pf" pair="state%test_coord_pf.output"/>
+    <conn id="state%test_coord_pf.self" pair="state%test_coord_pf.output"/>
+
+</iobject> <!-- main -->
+

@@ -1,0 +1,71 @@
+<?xml version="1.0" ?>
+
+<!-- Specification of FAP visualization module for GTK -->
+<!--
+     -->
+
+<!DOCTYPE  iobject SYSTEM "/usr/share/fapws/conf/objspec.dtd"> 
+
+<iobject type="none" id="main">
+    <iobject type="none" id="Window" quiet="yes">
+	<out id="window"/>
+	<state type="StUint32" id="widget" init="0" transf="vm_window_init">
+	    <logspec event="upd"> <logdata id="cur"/> <logdata id="new"/> </logspec> 
+	</state>
+	<ext id="window" pair="state%widget.output"/>
+    </iobject> <!-- Window -->
+
+    <iobject type="none" id="Fixed" quiet="yes">
+	<inp id="parent"/>
+	<out id="widget"/>
+	<state type="StUint32" id="widget" init="0" transf="vm_fixed_init">
+	    <inp id="parent"/>
+	    <logspec event="upd"> <logdata id="cur"/> <logdata id="new"/> </logspec> 
+	</state>
+	<ext id="parent" pair="state%widget.parent"/>
+	<ext id="widget" pair="state%widget.output"/>
+    </iobject> <!-- Drawing_Area -->
+
+    <iobject type="none" id="Drawing_Area" quiet="yes">
+	<inp id="parent"/>
+	<inp id="coord_pf"/>
+	<inp id="size"/>
+
+	<state type="StUint32" id="widget" init="0" transf="vm_drawing_area_init">
+	    <inp id="parent"/>
+	    <inp id="size"/>
+	    <logspec event="upd"> <logdata id="cur"/> <logdata id="new"/> </logspec> 
+	</state>
+
+	<!-- Coordinates of drawing area -->
+	<state type="StVectF" id="coord_pf" init="{0.0,0.0}" transf="vm_drawing_area_coord_pf">
+	    <inp id="value"/>
+	    <inp id="widget"/>
+	    <inp id="area_size"/>
+	    <logspec event="upd"> <logdata id="cur"/> <logdata id="new"/> </logspec> 
+	</state>
+
+	<!-- Size of drawing area -->
+	<state type="StVectF" id="size" init="{20.0,20.0}" transf="vm_drawing_area_size">
+	    <inp id="value"/>
+	    <inp id="widget"/>
+	    <logspec event="upd"> <logdata id="cur"/> <logdata id="new"/> </logspec> 
+	</state>
+
+	<!-- Size of parent's window -->
+	<state type="StVectF" id="area_size" init="{0.0,0.0}">
+	    <logspec event="upd"> <logdata id="cur"/> <logdata id="new"/> </logspec> 
+	</state>
+
+
+	<ext id="parent" pair="state%widget.parent"/>
+	<ext id="coord_pf" pair="state%coord_pf.value"/>
+	<ext id="size" pair="state%size.value"/>
+	<conn id="state%widget.size" pair="state%size.output"/>
+	<conn id="state%coord_pf.widget" pair="state%widget.output"/>
+	<conn id="state%coord_pf.area_size" pair="state%area_size.output"/>
+	<conn id="state%size.widget" pair="state%widget.output"/>
+    </iobject> <!-- Drawing_Area -->
+
+</iobject> <!-- main -->
+

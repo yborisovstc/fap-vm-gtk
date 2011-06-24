@@ -1,0 +1,83 @@
+<?xml version="1.0" ?>
+
+<!-- Specification of FAP visualization module for GTK -->
+<!--
+     -->
+
+<!DOCTYPE  iobject SYSTEM "/usr/share/fapws/conf/objspec.dtd"> 
+
+<iobject type="none" id="main">
+    <iobject type="none" id="Window" quiet="yes">
+	<out id="window"/>
+	<state type="StUint32" id="widget" init="0" transf="vm_window_init">
+	    <logspec event="upd"> <logdata id="cur"/> <logdata id="new"/> </logspec> 
+	</state>
+	<ext id="window" pair="state%widget.output"/>
+    </iobject> <!-- Window -->
+
+    <iobject type="none" id="Fixed" quiet="yes">
+	<inp id="parent"/>
+	<out id="widget"/>
+	<state type="StUint32" id="widget" init="0" transf="vm_fixed_init">
+	    <inp id="parent"/>
+	    <logspec event="upd"> <logdata id="cur"/> <logdata id="new"/> </logspec> 
+	</state>
+	<ext id="parent" pair="state%widget.parent"/>
+	<ext id="widget" pair="state%widget.output"/>
+    </iobject> <!-- Drawing_Area -->
+
+    <iobject type="none" id="Drawing_Area" quiet="yes">
+	<inp id="parent"/>
+	<inp id="coord_x"/>
+	<inp id="coord_pf"/>
+	<state type="StUint32" id="widget" init="0" transf="vm_drawing_area_init">
+	    <inp id="parent"/>
+	    <logspec event="upd"> <logdata id="cur"/> <logdata id="new"/> </logspec> 
+	</state>
+	<!-- Coordinates of drawing area -->
+	<state type="StUint32" id="coord_x" init="0" transf="vm_drawing_area_coordx">
+	    <inp id="value"/>
+	    <inp id="widget"/>
+	    <logspec event="upd"> <logdata id="cur"/> <logdata id="new"/> </logspec> 
+	</state>
+	<!-- Coordinates of drawing area -->
+	<state type="StVectF" id="coord_pf" init="{0.0,0.0}" transf="vm_drawing_area_coord_pf">
+	    <inp id="value"/>
+	    <inp id="widget"/>
+	    <logspec event="upd"> <logdata id="cur"/> <logdata id="new"/> </logspec> 
+	</state>
+
+	<ext id="parent" pair="state%widget.parent"/>
+	<ext id="coord_x" pair="state%coord_x.value"/>
+	<ext id="coord_pf" pair="state%coord_pf.value"/>
+	<conn id="state%coord_x.widget" pair="state%widget.output"/>
+	<conn id="state%coord_pf.widget" pair="state%widget.output"/>
+    </iobject> <!-- Drawing_Area -->
+
+
+
+    <state type="StInt" id="test_coord_x" init="0">
+	<inp id="self"/>
+	<logspec event="upd"> <logdata id="cur"/> <logdata id="new"/> </logspec> 
+	<trans>add inp self 0</trans>
+    </state>
+
+    <state type="StVectF" id="test_coord_pf" init="{0,0}">
+	<inp id="self"/>
+	<logspec event="upd"> <logdata id="cur"/> <logdata id="new"/> </logspec> 
+	<trans>add inp self {0.1,0.1}</trans>
+    </state>
+
+
+    <iobject type="Window" id="Test_Window"></iobject>
+    <iobject type="Fixed" id="Test_Fixed"></iobject>
+    <iobject type="Drawing_Area" id="Test_DrawArea"></iobject>
+    <conn id="Test_Fixed.parent" pair="Test_Window.window"/>
+    <conn id="Test_DrawArea.parent" pair="Test_Fixed.widget"/>
+    <conn id="Test_DrawArea.coord_x" pair="state%test_coord_x.output"/>
+    <conn id="Test_DrawArea.coord_pf" pair="state%test_coord_pf.output"/>
+    <conn id="state%test_coord_x.self" pair="state%test_coord_x.output"/>
+    <conn id="state%test_coord_pf.self" pair="state%test_coord_pf.output"/>
+
+</iobject> <!-- main -->
+
