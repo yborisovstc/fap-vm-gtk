@@ -1,4 +1,5 @@
 #include "vmwindow.h"
+#include "vmstates.h"
 #include "fapstext.h"
 #include <deslbase.h>
 #include <gtk/gtk.h>
@@ -34,9 +35,16 @@ static const TTransInfo* tinfos[] = {
     NULL};
 
 
+const TStateInfo KSinfo_GtkWidgetPtr = TStateInfo("StGtkWidgetPtr", (TStateFactFun) VmStateWidget::New );
+
+static const TStateInfo* sinfos[] = {&KSinfo_GtkWidgetPtr, NULL};
+
+
+
 CProvider::CProvider(): CAE_ProviderBase("vmgtk")
 {
     RegisterTransfs(tinfos);
+    RegisterStates(sinfos);
 }
 
 CProvider::~CProvider() 
@@ -46,7 +54,13 @@ CProvider::~CProvider()
 
 CAE_StateBase* CProvider::CreateStateL(const char *aTypeUid, const char* aInstName, CAE_Object* aMan) const
 {
-    return NULL;
+    if (iStates.count(aTypeUid) > 0) {
+	const TStateInfo* sinfo = iStates.find(aTypeUid)->second;
+	return sinfo->iFactFun(aInstName, aMan, TTransInfo());
+    }
+    else {
+	return NULL;
+    }
 }
 
 CAE_EBase* CProvider::CreateObjectL(TUint32 aTypeUid) const
@@ -71,10 +85,16 @@ const TTransInfo* CProvider::GetTransf(const char *aName) const
 
 void CProvider::RegisterState(const TStateInfo *aInfo)
 {
+    _FAP_ASSERT(aInfo != NULL);
+    iStates[aInfo->iType] = aInfo;
 }
 
 void CProvider::RegisterStates(const TStateInfo **aInfos)
 {
+    _FAP_ASSERT(aInfos != NULL);
+    for (int i = 0; aInfos[i] != NULL; i++) {
+	RegisterState(aInfos[i]);
+    }
 }
 
 void CProvider::RegisterTransf(const TTransInfo *aTrans)
@@ -135,10 +155,12 @@ gboolean drawing_area_handle_expose_event(GtkWidget *widget, GdkEventExpose *eve
 
 void trans_drawing_area_init(CAE_Object* aObject, CAE_StateBase* aState)
 {
-    CAE_TState<TUint32>& self = (CAE_TState<TUint32>&) *aState;
-    const TUint32& parent = self.Inp("parent");
-    if (~self == 0 && parent != 0) {
-	const CF_TdVectF& size = self.Inp("size");
+    VmStateWidget* self = aState->GetFbObj(self);
+    CAE_StateBase* sb_parent = self->Input("parent");
+    VmStateWidget* s_parent = sb_parent->GetFbObj(s_parent);
+    GtkWidget* parent = s_parent->Value();
+    if (self->Value() == 0 && parent != 0) {
+	const CF_TdVectF& size = (*self).Inp("size");
 	GtkWidget* widget = gtk_drawing_area_new();
 	GtkDrawingArea* area = GTK_DRAWING_AREA(widget);
 	gtk_widget_show(widget);
@@ -151,14 +173,16 @@ void trans_drawing_area_init(CAE_Object* aObject, CAE_StateBase* aState)
 	TInt isy = paralloc.height - size.iY;
 	gtk_fixed_move(GTK_FIXED(pwidget), widget, 0, isy);
 	g_signal_connect(G_OBJECT(widget), "expose_event", G_CALLBACK(drawing_area_handle_expose_event), NULL);
-	self = (TUint32) widget;
+	self->Set(&widget);
     }
 }
 
 void trans_drawing_area_size(CAE_Object* aObject, CAE_StateBase* aState)
 {
     CAE_TState<CF_TdVectF>& self = (CAE_TState<TUint32>&) *aState;
-    const TUint32& iwidget = self.Inp("widget");
+    CAE_StateBase* sb_wid = self.Input("widget");
+    VmStateWidget* s_wid = sb_wid->GetFbObj(s_wid);
+    GtkWidget* widget = s_wid->Value();
     CF_TdVectF size = ~self;
     CAE_StateBase* sinp = self.Input("size");
     if (sinp != NULL) {
@@ -166,8 +190,7 @@ void trans_drawing_area_size(CAE_Object* aObject, CAE_StateBase* aState)
 	size = ssize;
 	self = size;
     }
-    if (iwidget != 0) {
-	GtkWidget* widget = GTK_WIDGET(iwidget);
+    if (widget != 0) {
 	gtk_widget_set_size_request(widget, size.iX, size.iY);
     }
 }
@@ -194,11 +217,12 @@ void trans_drawing_area_coord_pf(CAE_Object* aObject, CAE_StateBase* aState)
 		self.Logger()->WriteFormat("vm_drawing_area_coord_pf:: ERROR: Inp [value] is of not supported type");
 	    }
 	}
-	const TUint32& iwidget = self.Inp("widget");
-	if (iwidget != 0) {
+	CAE_StateBase* sb_wid = self.Input("widget");
+	VmStateWidget* s_wid = sb_wid->GetFbObj(s_wid);
+	GtkWidget* widget = s_wid->Value();
+	if (widget != 0) {
 	    // Size
 	    const CF_TdVectF& asize = self.Inp("area_size");
-	    GtkWidget* widget = GTK_WIDGET(iwidget);
 	    GtkWidget* parent = gtk_widget_get_parent(widget);
 	    GtkFixed* fixed = GTK_FIXED(parent);
 	    GtkAllocation alloc;
@@ -246,15 +270,15 @@ void fixed_handle_size_allocate_event( GtkWidget *widget, GtkAllocation *allc, g
 
 void trans_fixed_init(CAE_Object* aObject, CAE_StateBase* aState)
 {
-    CAE_TState<TUint32>& self = (CAE_TState<TUint32>&) *aState;
-    const TUint32& parent = self.Inp("parent");
-    if (~self == 0 && parent != 0) {
+    VmStateWidget* self = aState->GetFbObj(self);
+    const TUint32& parent = (*self).Inp("parent");
+    if (self->Value() == 0 && parent != 0) {
 	GtkWidget* widget = gtk_fixed_new();
 	gtk_widget_show(widget);
 	GtkContainer* pwidget = GTK_CONTAINER(parent);
 	gtk_container_add(pwidget, widget);
 //	g_signal_connect(G_OBJECT(widget), "size_request", G_CALLBACK (fixed_handle_size_request_event), NULL);
 //	g_signal_connect(G_OBJECT(widget), "size_allocate", G_CALLBACK (fixed_handle_size_allocate_event), NULL);
-	self = (TUint32) widget;
+	self->Set(&widget);
     }
 }

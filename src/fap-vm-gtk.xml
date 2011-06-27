@@ -9,7 +9,7 @@
 <iobject type="none" id="main">
     <iobject type="none" id="Window" quiet="yes">
 	<out id="window"/>
-	<state type="StUint32" id="widget" init="0" transf="vm_window_init">
+	<state type="StGtkWidgetPtr" id="widget" init="0" transf="vm_window_init">
 	    <logspec event="upd"> <logdata id="cur"/> <logdata id="new"/> </logspec> 
 	</state>
 	<ext id="window" pair="state%widget.output"/>
@@ -18,7 +18,7 @@
     <iobject type="none" id="Fixed" quiet="yes">
 	<inp id="parent"/>
 	<out id="widget"/>
-	<state type="StUint32" id="widget" init="0" transf="vm_fixed_init">
+	<state type="StGtkWidgetPtr" id="widget" init="0" transf="vm_fixed_init">
 	    <inp id="parent"/>
 	    <logspec event="upd"> <logdata id="cur"/> <logdata id="new"/> </logspec> 
 	</state>
@@ -31,7 +31,7 @@
 	<inp id="coord_pf"/>
 	<inp id="size"/>
 
-	<state type="StUint32" id="widget" init="0" transf="vm_drawing_area_init">
+	<state type="StGtkWidgetPtr" id="widget" init="0" transf="vm_drawing_area_init">
 	    <inp id="parent"/>
 	    <inp id="size"/>
 	    <logspec event="upd"> <logdata id="cur"/> <logdata id="new"/> </logspec> 

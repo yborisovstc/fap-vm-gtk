@@ -1,3 +1,7 @@
+
+#ifndef __FAPVM_WIN_H
+#define __FAPVM_WIN_H
+
 #include <fapbase.h>
 #include <fapfact.h>
 
@@ -24,6 +28,7 @@ class CProvider: public CAE_ProviderBase
     private:
 	// Register of transitions
 	map<string, const TTransInfo*> iTransfs;
+	map<string, const TStateInfo*> iStates;
 };
 
-
+#endif

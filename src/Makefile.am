@@ -7,6 +7,8 @@ AM_CPPFLAGS = -D_PLAT_LINUX_ -g -O0
 lib_LTLIBRARIES = libfapvmgtk.la
 
 libfapvmgtk_la_SOURCES = \
+		       vmstates.cpp \
+		       vmstates.h \
 		       vmwindow.cpp \
 		       vmwindow.h 
     
