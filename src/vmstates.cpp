@@ -1,7 +1,7 @@
 #include "vmstates.h"
 #include <stdlib.h>
 
-
+const char* KStateWidgetTypeName = "StGtkWidgetPtr";
 
 // User defined state, based on DEST expression
 //
@@ -9,6 +9,7 @@ VmStateWidget::VmStateWidget(const string& aInstName, CAE_Object* aMan):
     CAE_State(aInstName.c_str(), sizeof(GObject*), aMan, TTransInfo())
 {
     CAE_State::ConstructL();
+    SetType(KStateWidgetTypeName);
 }
 
 VmStateWidget::~VmStateWidget()

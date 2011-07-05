@@ -34,8 +34,9 @@ static const TTransInfo* tinfos[] = {
     &KTi_fixed_init, 
     NULL};
 
+extern const char* KStateWidgetTypeName;
 
-const TStateInfo KSinfo_GtkWidgetPtr = TStateInfo("StGtkWidgetPtr", (TStateFactFun) VmStateWidget::New );
+const TStateInfo KSinfo_GtkWidgetPtr = TStateInfo(KStateWidgetTypeName, (TStateFactFun) VmStateWidget::New );
 
 static const TStateInfo* sinfos[] = {&KSinfo_GtkWidgetPtr, NULL};
 
@@ -184,11 +185,25 @@ void trans_drawing_area_size(CAE_Object* aObject, CAE_StateBase* aState)
     VmStateWidget* s_wid = sb_wid->GetFbObj(s_wid);
     GtkWidget* widget = s_wid->Value();
     CF_TdVectF size = ~self;
-    CAE_StateBase* sinp = self.Input("size");
+    CAE_StateBase* sinp = self.Input("value");
     if (sinp != NULL) {
-	const CF_TdVectF& ssize = self.Inp("size");
-	size = ssize;
-	self = size;
+	CAE_StateEx* seinp = sinp->GetFbObj(seinp);
+	if (seinp != NULL) {
+	    // Assuming it is compatible ti TVectF
+	    string datas = seinp->Value().ToString();
+	    CSL_EfVectF::FromStr(size, datas);
+	}
+	else {
+	    CAE_TState<CF_TdVectF>* sinpt = sinp->GetFbObj(sinpt);
+	    if (sinpt != NULL) {
+		const CF_TdVectF& valr = self.Inp("value");
+		size = valr;
+		self = size;
+	    }
+	    else {
+		self.Logger()->WriteFormat("vm_drawing_area_size:: ERROR: Inp [value] is of not supported type");
+	    }
+	}
     }
     if (widget != 0) {
 	gtk_widget_set_size_request(widget, size.iX, size.iY);
