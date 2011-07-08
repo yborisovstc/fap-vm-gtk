@@ -1,0 +1,19 @@
+Source: fap-vm-gtk
+Section: unknown
+Priority: extra
+Maintainer: Yuri Borisov <yuri.borisov.v@gmail.com>
+Build-Depends: debhelper (>= 7), fapws-dev (>= 0.0.4)
+Standards-Version: 3.7.3
+
+Package: fap-vm-gtk
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, fapws (>= 0.0.4)
+Description: GTK visualization module for Finite Automata Framework (FAP)
+
+Package: fap-vm-gtk-dbg
+Section: libdevel
+Priority: extra
+Architecture: any
+Depends: fap-vm-gtk (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Description: GTK visualization module for Finite Automata Framework (FAP) pkg debug symbols
+ 

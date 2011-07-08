@@ -158,23 +158,28 @@ void trans_drawing_area_init(CAE_Object* aObject, CAE_StateBase* aState)
 {
     VmStateWidget* self = aState->GetFbObj(self);
     CAE_StateBase* sb_parent = self->Input("parent");
-    VmStateWidget* s_parent = sb_parent->GetFbObj(s_parent);
-    GtkWidget* parent = s_parent->Value();
-    if (self->Value() == 0 && parent != 0) {
-	const CF_TdVectF& size = (*self).Inp("size");
-	GtkWidget* widget = gtk_drawing_area_new();
-	GtkDrawingArea* area = GTK_DRAWING_AREA(widget);
-	gtk_widget_show(widget);
-	gtk_widget_set_size_request(widget, size.iX, size.iY);
-	GtkContainer* pcont = GTK_CONTAINER(parent);
-	GtkWidget* pwidget = GTK_WIDGET(parent);
-	gtk_container_add(pcont, widget);
-	GtkAllocation paralloc;
-	gtk_widget_get_allocation(pwidget, &paralloc);
-	TInt isy = paralloc.height - size.iY;
-	gtk_fixed_move(GTK_FIXED(pwidget), widget, 0, isy);
-	g_signal_connect(G_OBJECT(widget), "expose_event", G_CALLBACK(drawing_area_handle_expose_event), NULL);
-	self->Set(&widget);
+    if (sb_parent != NULL) {
+	VmStateWidget* s_parent = sb_parent->GetFbObj(s_parent);
+	GtkWidget* parent = s_parent->Value();
+	if (self->Value() == 0 && parent != 0) {
+	    const CF_TdVectF& size = (*self).Inp("size");
+	    GtkWidget* widget = gtk_drawing_area_new();
+	    GtkDrawingArea* area = GTK_DRAWING_AREA(widget);
+	    gtk_widget_show(widget);
+	    gtk_widget_set_size_request(widget, size.iX, size.iY);
+	    GtkContainer* pcont = GTK_CONTAINER(parent);
+	    GtkWidget* pwidget = GTK_WIDGET(parent);
+	    gtk_container_add(pcont, widget);
+	    GtkAllocation paralloc;
+	    gtk_widget_get_allocation(pwidget, &paralloc);
+	    TInt isy = paralloc.height - size.iY;
+	    gtk_fixed_move(GTK_FIXED(pwidget), widget, 0, isy);
+	    g_signal_connect(G_OBJECT(widget), "expose_event", G_CALLBACK(drawing_area_handle_expose_event), NULL);
+	    self->Set(&widget);
+	}
+    }
+    else {
+	self->Logger()->WriteFormat("vm_drawing_area_init:: WARNING: Inp [parent] is not connected");
     }
 }
 
@@ -286,14 +291,20 @@ void fixed_handle_size_allocate_event( GtkWidget *widget, GtkAllocation *allc, g
 void trans_fixed_init(CAE_Object* aObject, CAE_StateBase* aState)
 {
     VmStateWidget* self = aState->GetFbObj(self);
-    const TUint32& parent = (*self).Inp("parent");
-    if (self->Value() == 0 && parent != 0) {
-	GtkWidget* widget = gtk_fixed_new();
-	gtk_widget_show(widget);
-	GtkContainer* pwidget = GTK_CONTAINER(parent);
-	gtk_container_add(pwidget, widget);
-//	g_signal_connect(G_OBJECT(widget), "size_request", G_CALLBACK (fixed_handle_size_request_event), NULL);
-//	g_signal_connect(G_OBJECT(widget), "size_allocate", G_CALLBACK (fixed_handle_size_allocate_event), NULL);
-	self->Set(&widget);
+    CAE_StateBase* sb_parent = self->Input("parent");
+    if (sb_parent != NULL) {
+	const TUint32& parent = (*self).Inp("parent");
+	if (self->Value() == 0 && parent != 0) {
+	    GtkWidget* widget = gtk_fixed_new();
+	    gtk_widget_show(widget);
+	    GtkContainer* pwidget = GTK_CONTAINER(parent);
+	    gtk_container_add(pwidget, widget);
+	    //	g_signal_connect(G_OBJECT(widget), "size_request", G_CALLBACK (fixed_handle_size_request_event), NULL);
+	    //	g_signal_connect(G_OBJECT(widget), "size_allocate", G_CALLBACK (fixed_handle_size_allocate_event), NULL);
+	    self->Set(&widget);
+	}
+    }
+    else {
+	self->Logger()->WriteFormat("vm_fixed_init:: WARNING: Inp [parent] is not connected");
     }
 }

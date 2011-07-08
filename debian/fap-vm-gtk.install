@@ -1,0 +1,3 @@
+usr/lib/fap/plugins/libfapvmgtk.so 
+usr/lib/fap/plugins/libfapvmgtk.so.* 
+usr/share/fapws/modules/*
