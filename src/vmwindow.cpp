@@ -101,7 +101,7 @@ void CProvider::RegisterStates(const TStateInfo **aInfos)
 void CProvider::RegisterTransf(const TTransInfo *aTrans)
 {
     _FAP_ASSERT(aTrans != NULL);
-    iTransfs[aTrans->iId] = aTrans;
+    iTransfs[aTrans->Name()] = aTrans;
 }
 
 void CProvider::RegisterTransfs(const TTransInfo **aTransfs)

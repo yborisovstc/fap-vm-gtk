@@ -12,7 +12,7 @@
 	<state type="StGtkWidgetPtr" id="widget" init="0" transf="vm_window_init">
 	    <logspec event="upd"> <logdata id="cur"/> <logdata id="new"/> </logspec> 
 	</state>
-	<ext id="window" pair="state%widget.output"/>
+	<ext id="out:window" pair="state:widget/out:output"/>
     </iobject> <!-- Window -->
 
     <iobject type="none" id="Fixed" quiet="yes">
@@ -22,8 +22,8 @@
 	    <inp id="parent"/>
 	    <logspec event="upd"> <logdata id="cur"/> <logdata id="new"/> </logspec> 
 	</state>
-	<ext id="parent" pair="state%widget.parent"/>
-	<ext id="widget" pair="state%widget.output"/>
+	<ext id="inp:parent" pair="state:widget/inp:parent"/>
+	<ext id="out:widget" pair="state:widget/out:output"/>
     </iobject> <!-- Drawing_Area -->
 
     <iobject type="none" id="Drawing_Area" quiet="yes">
@@ -58,13 +58,13 @@
 	</state>
 
 
-	<ext id="parent" pair="state%widget.parent"/>
-	<ext id="coord_pf" pair="state%coord_pf.value"/>
-	<ext id="size" pair="state%size.value"/>
-	<conn id="state%widget.size" pair="state%size.output"/>
-	<conn id="state%coord_pf.widget" pair="state%widget.output"/>
-	<conn id="state%coord_pf.area_size" pair="state%area_size.output"/>
-	<conn id="state%size.widget" pair="state%widget.output"/>
+	<ext id="inp:parent" pair="state:widget/inp:parent"/>
+	<ext id="inp:coord_pf" pair="state:coord_pf/inp:value"/>
+	<ext id="inp:size" pair="state:size/inp:value"/>
+	<conn id="state:widget/inp:size" pair="state:size/out:output"/>
+	<conn id="state:coord_pf/inp:widget" pair="state:widget/out:output"/>
+	<conn id="state:coord_pf/inp:area_size" pair="state:area_size/out:output"/>
+	<conn id="state:size/inp:widget" pair="state:widget/out:output"/>
     </iobject> <!-- Drawing_Area -->
 
 </iobject> <!-- main -->
