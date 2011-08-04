@@ -25,6 +25,7 @@ class CProvider: public CAE_ProviderBase
 	virtual CAE_ChromoBase* CreateChromo() const;
 	virtual CAE_TranExBase* CreateTranEx(MCAE_LogRec* aLogger) const;
 	virtual MAE_Opv* CreateViewProxy();
+	virtual void GetRegisteredStates(vector<const TStateInfo*>& aInfo) const;
     private:
 	// Register of transitions
 	map<string, const TTransInfo*> iTransfs;

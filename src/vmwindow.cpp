@@ -133,6 +133,12 @@ MAE_Opv* CProvider::CreateViewProxy()
 {
 } 
 
+void CProvider::GetRegisteredStates(vector<const TStateInfo*>& aInfo) const
+{
+    for (map<string, const TStateInfo*>::const_iterator it = iStates.begin(); it != iStates.end(); it++) {
+	aInfo.push_back(it->second);
+    }
+}
 
 void trans_window_init(CAE_Object* aObject, CAE_StateBase* aState)
 {
